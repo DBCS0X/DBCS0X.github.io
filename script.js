@@ -1,63 +1,43 @@
-// Ano atual no footer
-document.getElementById("currentYear").textContent = new Date().getFullYear();
 
-// Efeito de digitação leve
-(function () {
-  const el = document.getElementById("typedText");
-  if (!el) return;
+const typedText = document.getElementById("typedText");
+const currentYear = document.getElementById("currentYear");
 
-  const phrases = [
-    "Estudante de ADS",
-    "Aprendendo C e Python",
-    "Curioso por tecnologia",
-    "Em busca de evolução"
-  ];
+currentYear.textContent = new Date().getFullYear();
 
-  let phraseIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-  let timeout;
+const phrases = [
+  "Estudante de ADS",
+  "Desenvolvedor em formação",
+  "Entusiasta de tecnologia"
+];
 
-  function type() {
-    const current = phrases[phraseIndex];
+let phraseIndex = 0;
+let letterIndex = 0;
+let deleting = false;
 
-    if (isDeleting) {
-      el.textContent = current.substring(0, charIndex - 1);
-      charIndex--;
-    } else {
-      el.textContent = current.substring(0, charIndex + 1);
-      charIndex++;
+function typeEffect() {
+  const phrase = phrases[phraseIndex];
+
+  typedText.textContent = phrase.substring(0, letterIndex);
+
+  if (!deleting) {
+    letterIndex++;
+
+    if (letterIndex > phrase.length) {
+      deleting = true;
+      setTimeout(typeEffect, 1200);
+      return;
     }
-
-    let speed = isDeleting ? 40 : 90;
-
-    if (!isDeleting && charIndex === current.length) {
-      speed = 1800; // pausa no final
-      isDeleting = true;
-    } else if (isDeleting && charIndex === 0) {
-      isDeleting = false;
-      phraseIndex = (phraseIndex + 1) % phrases.length;
-      speed = 400;
-    }
-
-    timeout = setTimeout(type, speed);
-  }
-
-  // Só inicia se o usuário não preferiu movimento reduzido
-  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    type();
   } else {
-    el.textContent = phrases[0];
-  }
-})();
+    letterIndex--;
 
-// Fecha o menu mobile ao clicar em um link
-document.querySelectorAll("#navbarContent .nav-link").forEach((link) => {
-  link.addEventListener("click", () => {
-    const collapse = document.getElementById("navbarContent");
-    if (collapse && collapse.classList.contains("show")) {
-      const bsCollapse = bootstrap.Collapse.getInstance(collapse);
-      if (bsCollapse) bsCollapse.hide();
+    if (letterIndex < 0) {
+      deleting = false;
+      phraseIndex = (phraseIndex + 1) % phrases.length;
+      letterIndex = 0;
     }
-  });
-});
+  }
+
+  setTimeout(typeEffect, deleting ? 45 : 90);
+}
+
+typeEffect();
